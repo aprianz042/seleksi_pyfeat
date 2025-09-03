@@ -7,7 +7,7 @@ detector = Detector(
     face_model="retinaface",
     landmark_model="mobilefacenet",
     au_model='xgb',
-    emotion_model="resmasknet",
+    emotion_model="svm",
     facepose_model="img2pose",
 )
 
@@ -65,15 +65,18 @@ def merge_with_suffix(dict1, dict2):
             merged[k] = v
     return merged
 
-def analysis(file_img):
+def analysis(file_img, label):
     try:
-        #image_path_before = f'FINAL/6_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis/{file_img}'
-        #image_path_after = f'FINAL/10_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal/{file_img}'
-        
-        image_path_before = f'FINAL/5_dataset_affectnet_rafdb_seleksi_wajah_miring/{file_img}'
-        image_path_after = f'FINAL/11_dataset_affectnet_rafdb_seleksi_wajah_miring_frontal/{file_img}'
+        image_path_before = f'FINAL/6_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis/{file_img}'
+        image_path_after = f'FINAL//10_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal/{file_img}'
 
-        file = {"file" : file_img}
+        #image_path_before = f'FINAL/5_dataset_affectnet_rafdb_seleksi_wajah_miring_03/{file_img}'
+        #image_path_after = f'FINAL/12_dataset_affectnet_rafdb_seleksi_wajah_miring_03_frontal/{file_img}'
+
+        #image_path_before = f'FINAL/5_dataset_affectnet_rafdb_seleksi_wajah_miring_diatas_03/{file_img}'
+        #image_path_after = f'FINAL/13_dataset_affectnet_rafdb_seleksi_wajah_miring_diatas_03_frontal/{file_img}'
+
+        file = {"file" : file_img, "gt": label}
         analysis_before = analisis_emo_pyfeat(image_path_before)
         analysis_after = analisis_emo_pyfeat(image_path_after)
         analysis_merged = merge_with_suffix(analysis_before, analysis_after)
@@ -82,11 +85,12 @@ def analysis(file_img):
     except Exception as e:
         return None
 
+dataset_path = "FINAL/10_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal"
+#dataset_path = "FINAL/12_dataset_affectnet_rafdb_seleksi_wajah_miring_03_frontal"
+#dataset_path = "FINAL/13_dataset_affectnet_rafdb_seleksi_wajah_miring_diatas_03_frontal"
 
-dataset_path = "FINAL/11_dataset_affectnet_rafdb_seleksi_wajah_miring_frontal"
-#dataset_path = "FINAL/10_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal"
 label_results = []
-max_images_per_label = 5
+max_images_per_label = 150
 for label in os.listdir(dataset_path):
     label_path = os.path.join(dataset_path, label)
     if os.path.isdir(label_path):
@@ -98,7 +102,7 @@ for label in os.listdir(dataset_path):
             if os.path.isfile(image_path):
                 if image_count < max_images_per_label:
                     image_ = os.path.join(label, image_name)
-                    result = analysis(image_)
+                    result = analysis(image_, label)
                     if result is not None:
                         #print(result)
                         label_results.append(result)
@@ -111,5 +115,5 @@ for label in os.listdir(dataset_path):
 
 df = pd.DataFrame(label_results)
 
-df.to_csv('1emotion_analysis_results.csv', index=False)
+df.to_csv('analisis_frontal_hand_svm_pyfeat.csv', index=False)
 print(df)

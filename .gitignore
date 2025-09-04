@@ -14,5 +14,7 @@ face_only_ori/
 hasil_deepface/
 hasil_seleksi_before_deepface/
 hasil_seleksi_datasetFIX/
+UJI/
 venv/
+.vscode/
 

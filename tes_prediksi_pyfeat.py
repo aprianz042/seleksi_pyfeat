@@ -7,6 +7,7 @@ detector = Detector(
     face_model="retinaface",
     landmark_model="mobilefacenet",
     au_model='xgb',
+    #emotion_model="resmasknet",
     emotion_model="svm",
     facepose_model="img2pose",
 )
@@ -67,14 +68,12 @@ def merge_with_suffix(dict1, dict2):
 
 def analysis(file_img, label):
     try:
-        image_path_before = f'FINAL/6_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis/{file_img}'
-        image_path_after = f'FINAL//10_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal/{file_img}'
+        image_path_before = f'UJI/2_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis/{file_img}'
+        image_path_after = f'UJI/4_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal/{file_img}'
 
-        #image_path_before = f'FINAL/5_dataset_affectnet_rafdb_seleksi_wajah_miring_03/{file_img}'
-        #image_path_after = f'FINAL/12_dataset_affectnet_rafdb_seleksi_wajah_miring_03_frontal/{file_img}'
+        #image_path_before = f'UJI/3_dataset_affectnet_rafdb_seleksi_wajah_miring/{file_img}'
+        #image_path_after = f'UJI/5_dataset_affectnet_rafdb_seleksi_wajah_miring_frontal/{file_img}'
 
-        #image_path_before = f'FINAL/5_dataset_affectnet_rafdb_seleksi_wajah_miring_diatas_03/{file_img}'
-        #image_path_after = f'FINAL/13_dataset_affectnet_rafdb_seleksi_wajah_miring_diatas_03_frontal/{file_img}'
 
         file = {"file" : file_img, "gt": label}
         analysis_before = analisis_emo_pyfeat(image_path_before)
@@ -85,12 +84,12 @@ def analysis(file_img, label):
     except Exception as e:
         return None
 
-dataset_path = "FINAL/10_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal"
-#dataset_path = "FINAL/12_dataset_affectnet_rafdb_seleksi_wajah_miring_03_frontal"
-#dataset_path = "FINAL/13_dataset_affectnet_rafdb_seleksi_wajah_miring_diatas_03_frontal"
+dataset_path = "UJI/4_dataset_affectnet_rafdb_seleksi_wajah_lurus_hand_sintesis_frontal/"
+#dataset_path = "UJI/5_dataset_affectnet_rafdb_seleksi_wajah_miring_frontal/"
+
 
 label_results = []
-max_images_per_label = 150
+max_images_per_label = 250 #atau 70
 for label in os.listdir(dataset_path):
     label_path = os.path.join(dataset_path, label)
     if os.path.isdir(label_path):
@@ -100,6 +99,7 @@ for label in os.listdir(dataset_path):
         for image_name in os.listdir(label_path):
             image_path = os.path.join(label_path, image_name)
             if os.path.isfile(image_path):
+                print(image_path)
                 if image_count < max_images_per_label:
                     image_ = os.path.join(label, image_name)
                     result = analysis(image_, label)
@@ -115,5 +115,5 @@ for label in os.listdir(dataset_path):
 
 df = pd.DataFrame(label_results)
 
-df.to_csv('analisis_frontal_hand_svm_pyfeat.csv', index=False)
+df.to_csv('analisis/analisis_frontal_hand_svm_pyfeat.csv', index=False)
 print(df)
